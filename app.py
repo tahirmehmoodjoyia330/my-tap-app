@@ -60,7 +60,7 @@ HTML_LAYOUT = """
 
         <div id="tap-zone" class="tap-btn relative w-64 h-64 rounded-full bg-gradient-to-b from-amber-400 to-amber-600 p-3 shadow-[0_0_50px_rgba(245,158,11,0.3)] cursor-pointer my-auto flex items-center justify-center border-4 border-amber-300">
             <div class="w-full h-full rounded-full bg-gray-950 flex items-center justify-center border-2 border-amber-500/50">
-                <i class="fa-solid fa-[#0b0e14] text-8xl text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">🐶</i>
+                <i class="fa-solid fa-paw text-7xl text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]"></i>
             </div>
         </div>
 
@@ -76,4 +76,4 @@ HTML_LAYOUT = """
     </div>
 
     <!-- TAB: BOOSTS -->
-    <div id="tab-boost" class="tab-content flex-1 p-
+    <div id="tab-boost" class="tab-content flex-1 p-5 overfl
