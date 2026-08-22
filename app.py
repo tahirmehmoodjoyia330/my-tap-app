@@ -1,4 +1,5 @@
 from flask import Flask, render_template_string
+import os
 
 app = Flask(__name__)
 
@@ -8,11 +9,11 @@ HTML_LAYOUT = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Tap to Earn - Pro Game</title>
+    <title>Tap to Earn Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { user-select: none; -webkit-user-select: none; background: #0f172a; font-family: sans-serif; overflow: hidden; }
+        body { user-select: none; -webkit-user-select: none; background-color: #0b0e14; color: white; font-family: sans-serif; }
         .tap-btn { transition: transform 0.05s ease; }
         .tap-btn:active { transform: scale(0.92); }
         .float-text {
@@ -24,77 +25,55 @@ HTML_LAYOUT = """
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-100px) scale(1.3); }
         }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
-<body class="h-screen flex flex-col justify-between text-white">
+<body class="flex flex-col h-screen justify-between overflow-hidden">
 
-    <div class="p-4 bg-slate-900/80 border-b border-slate-800">
-        <div class="flex justify-between items-center mb-3">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full border-2 border-yellow-500 bg-slate-800 flex items-center justify-center">
-                    <i class="fa-solid fa-user-ninja text-2xl text-yellow-500"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm text-yellow-400">PRO GAMER</h3>
-                    <div class="text-xs text-slate-400">Level 1 / 30</div>
-                </div>
+    <!-- Top Header -->
+    <div class="px-5 pt-4 flex justify-between items-center bg-gray-900/50 pb-3 border-b border-gray-800">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
+                <i class="fa-solid fa-user-ninja text-amber-400"></i>
             </div>
-            <div class="bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-2">
-                <i class="fa-solid fa-coins text-yellow-500"></i>
-                <span id="balance" class="font-black text-sm">0</span>
+            <div>
+                <h2 class="text-sm font-bold text-gray-200">PRO GAMER</h2>
+                <p class="text-xs text-amber-400 font-semibold">Level 1 / 30</p>
+            </div>
+        </div>
+        <div class="bg-gray-800/80 px-3 py-1.5 rounded-full border border-gray-700 flex items-center space-x-2">
+            <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
+            <span id="top-balance" class="font-bold text-sm">0</span>
+        </div>
+    </div>
+
+    <!-- MAIN TAB: TAP GAME -->
+    <div id="tab-tap" class="tab-content active flex-1 flex flex-col items-center justify-between p-5">
+        <div class="text-center mt-2">
+            <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold mb-1">TOTAL BALANCE</p>
+            <div class="flex items-center justify-center space-x-3">
+                <i class="fa-solid fa-coins text-4xl text-amber-400"></i>
+                <span id="balance" class="text-5xl font-black tracking-tight">0</span>
+            </div>
+        </div>
+
+        <div id="tap-zone" class="tap-btn relative w-64 h-64 rounded-full bg-gradient-to-b from-amber-400 to-amber-600 p-3 shadow-[0_0_50px_rgba(245,158,11,0.3)] cursor-pointer my-auto flex items-center justify-center border-4 border-amber-300">
+            <div class="w-full h-full rounded-full bg-gray-950 flex items-center justify-center border-2 border-amber-500/50">
+                <i class="fa-solid fa-[#0b0e14] text-8xl text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">🐶</i>
+            </div>
+        </div>
+
+        <div class="w-full max-w-xs mb-2">
+            <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
+                <span class="flex items-center gap-1"><i class="fa-solid fa-bolt text-amber-400"></i> Energy</span>
+                <div><span id="energy">500</span> / <span id="max-energy">500</span></div>
+            </div>
+            <div class="w-full bg-gray-800 h-3 rounded-full overflow-hidden border border-gray-700">
+                <div id="energy-bar" class="bg-gradient-to-r from-amber-500 to-yellow-300 h-full w-full transition-all duration-100"></div>
             </div>
         </div>
     </div>
 
-    <div class="relative flex-1 flex flex-col items-center justify-center" id="tap-zone">
-        <div class="tap-btn relative w-64 h-64 rounded-full bg-slate-800/50 border-4 border-yellow-500/30 flex items-center justify-center cursor-pointer shadow-2xl">
-            <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="w-48 h-48 object-contain pointer-events-none">
-        </div>
-    </div>
-
-    <div class="p-4 bg-slate-900/90 border-t border-slate-800">
-        <div class="flex justify-between items-center mb-4 px-2">
-            <div class="flex items-center gap-2 text-yellow-400 font-bold">
-                <i class="fa-solid fa-bolt text-lg"></i>
-                <span id="energy">500</span> / 500
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let balance = 0;
-        let energy = 500;
-        const balanceEl = document.getElementById('balance');
-        const energyEl = document.getElementById('energy');
-        const tapZone = document.getElementById('tap-zone');
-
-        tapZone.addEventListener('pointerdown', (e) => {
-            if (energy <= 0) return;
-            balance += 1;
-            energy -= 1;
-            balanceEl.innerText = balance.toLocaleString();
-            energyEl.innerText = energy;
-
-            const floatText = document.createElement('div');
-            floatText.className = 'float-text';
-            floatText.innerText = '+1';
-            floatText.style.left = `${e.clientX - 15}px`;
-            floatText.style.top = `${e.clientY - 30}px`;
-            document.body.appendChild(floatText);
-
-            setTimeout(() => floatText.remove(), 800);
-        });
-    </script>
-</body>
-</html>
-"""
-
-@app.route('/')
-def home():
-    return render_template_string(HTML_LAYOUT)
-
-if __name__ == '__main__':
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
-    
+    <!-- TAB: BOOSTS -->
+    <div id="tab-boost" class="tab-content flex-1 p-
