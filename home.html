@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block title %}Home • LuxMine{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 pt-6 pb-4">
+    <!-- Top bar -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <p class="text-slate-400 text-xs">Welcome back</p>
+            <h2 class="text-lg font-bold text-white">{{ user.username }}</h2>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="glass rounded-full px-3 py-1.5 flex items-center gap-1.5">
+                <span class="text-amber-400 text-sm">🪙</span>
+                <span class="font-semibold text-sm" id="coin-balance">{{ '%.0f'|format(user.coins) }}</span>
+            </div>
+            <div class="glass-gold rounded-full px-3 py-1.5 flex items-center gap-1.5">
+                <span class="text-sm">🪨</span>
+                <span class="font-semibold text-sm text-gold-400" id="stone-balance">{{ user.stones }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Card (no car) -->
+    <div class="glass rounded-3xl p-5 mb-5 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gold-500/10 to-transparent rounded-bl-full"></div>
+        
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <p class="text-xs text-slate-400 uppercase tracking-wider">Level {{ user.level }}</p>
+                <p class="text-lg font-bold text-gold-400 mt-0.5">{{ car.name }}</p>
+            </div>
+            <div class="w-14 h-14 rounded-2xl glass-gold flex items-center justify-center">
+                <span class="text-2xl font-extrabold text-gold-400">{{ user.level }}</span>
+            </div>
+        </div>
+
+        <!-- XP Bar -->
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+            <span>XP</span>
+            <span>{{ user.xp }} / {{ user.get_xp_for_next_level() }}</span>
+        </div>
+        <div class="h-2 bg-dark-600 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-500"
+                 style="width: {{ (user.xp / user.get_xp_for_next_level() * 100)|round }}%"></div>
+        </div>
+    </div>
+
+    <!-- 24h One-Tap Mining -->
+    <div class="glass-gold rounded-3xl p-5 mb-5">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">⛏️</span>
+                <div>
+                    <h3 class="font-bold text-white">24h One-Tap Mining</h3>
+                    <p class="text-xs text-slate-400">Rate: <span class="text-gold-400">{{ '%.1f'|format(user.get_mining_rate()) }}</span> coins/hr</p>
+                </div>
+            </div>
+            {% if user.streak > 0 %}
+            <div class="flex items-center gap-1 bg-dark-700 rounded-full px-2.5 py-1">
+                <span class="text-orange-400 text-sm">🔥</span>
+                <span class="text-xs font-semibold">{{ user.streak }}d</span>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if user.is_mining %}
+            <div class="flex flex-col items-center py-4">
+                <div class="relative w-36 h-36 mb-4">
+                    <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#1a1a25" stroke-width="8"/>
+                        <circle id="progress-circle" cx="50" cy="50" r="42" fill="none"
+                                stroke="url(#goldGrad)" stroke-width="8" stroke-linecap="round"
+                                stroke-dasharray="263.9" stroke-dashoffset="{{ 263.9 * (1 - mining_progress/100) }}"
+                                class="progress-ring"/>
+                        <defs>
+                            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#f59e0b"/>
+                                <stop offset="100%" stop-color="#fbbf24"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="countdown" class="text-xl font-bold text-white tabular-nums">--:--:--</span>
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider">remaining</span>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-300 mb-3">Mining in progress...</p>
+                <button id="claim-btn" onclick="claimMining()" 
+                        class="w-full py-3 rounded-xl font-semibold text-sm transition
+                        {% if remaining_seconds > 0 %}bg-dark-600 text-slate-500 cursor-not-allowed{% else %}btn-gold text-dark-900{% endif %}"
+                        {% if remaining_seconds > 0 %}disabled{% endif %}>
+                    {% if remaining_seconds > 0 %}Wait for completion{% else %}Claim Rewards 💰{% endif %}
+                </button>
+            </div>
+        {% else %}
+            <button onclick="startMining()" id="mine-btn"
+                    class="w-full btn-gold text-dark-900 font-bold py-4 rounded-xl text-base flex items-center justify-center gap-2 active:scale-[0.98] transition">
+                <span class="text-xl">⛏️</span> Start 24h Mining
+            </button>
+            <p class="text-center text-xs text-slate-500 mt-3">One tap • 24 hours • Auto streak tracking</p>
+        {% endif %}
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-3 gap-3 mb-5">
+        <div class="glass rounded-2xl p-3 text-center">
+            <p class="text-xs text-slate-400 mb-1">Level</p>
+            <p class="text-lg font-bold text-gold-400">{{ user.level }}</p>
+        </div>
+        <div class="glass rounded-2xl p-3 text-center">
+            <p class="text-xs text-slate-400 mb-1">Streak</p>
+            <p class="text-lg font-bold text-orange-400">{{ user.streak }}🔥</p>
+        </div>
+        <div class="glass rounded-2xl p-3 text-center">
+            <p class="text-xs text-slate-400 mb-1">Rate</p>
+            <p class="text-lg font-bold text-emerald-400">{{ '%.0f'|format(user.get_mining_rate()) }}/h</p>
+        </div>
+    </div>
+
+    <!-- Stone info -->
+    <div class="glass rounded-2xl p-4 flex items-start gap-3">
+        <span class="text-2xl">🪨</span>
+        <div>
+            <p class="text-sm font-semibold text-white">Premium STONE</p>
+            <p class="text-xs text-slate-400 mt-0.5">Mine continuously for 7 days to earn 1 STONE. Current streak: <span class="text-gold-400">{{ user.streak }} days</span></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const remaining = {{ remaining_seconds }};
+    let secondsLeft = remaining;
+
+    function formatTime(s) {
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    }
+
+    const countdownEl = document.getElementById('countdown');
+    if (countdownEl && secondsLeft > 0) {
+        countdownEl.textContent = formatTime(secondsLeft);
+        const timer = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft <= 0) {
+                clearInterval(timer);
+                countdownEl.textContent = '00:00:00';
+                const btn = document.getElementById('claim-btn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.className = 'w-full py-3 rounded-xl font-semibold text-sm btn-gold text-dark-900';
+                    btn.textContent = 'Claim Rewards 💰';
+                }
+                const circle = document.getElementById('progress-circle');
+                if (circle) circle.style.strokeDashoffset = '0';
+            } else {
+                countdownEl.textContent = formatTime(secondsLeft);
+            }
+        }, 1000);
+    }
+
+    async function startMining() {
+        const btn = document.getElementById('mine-btn');
+        if (btn) btn.disabled = true;
+        try {
+            const res = await fetch('/start_mining', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) location.reload();
+            else {
+                alert(data.message);
+                if (btn) btn.disabled = false;
+            }
+        } catch (e) {
+            alert('Error starting mining');
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    async function claimMining() {
+        try {
+            const res = await fetch('/claim_mining', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else alert(data.message);
+        } catch (e) {
+            alert('Error claiming');
+        }
+    }
+</script>
+{% endblock %}
