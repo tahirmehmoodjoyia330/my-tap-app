@@ -9,221 +9,231 @@ HTML_LAYOUT = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Nexus Tap Pro - Addictive Edition</title>
+    <title>Bums Pro Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { user-select: none; -webkit-user-select: none; background-color: #07090e; color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
-        .tap-btn { transition: transform 0.05s ease; }
-        .tap-btn:active { transform: scale(0.88); }
+        body { user-select: none; -webkit-user-select: none; background-color: #0b131d; color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .tap-btn { transition: transform 0.04s ease; }
+        .tap-btn:active { transform: scale(0.92); }
         .float-text {
             position: absolute; font-weight: 900; font-size: 2.2rem; color: #fbbf24;
-            text-shadow: 0 0 20px rgba(251, 191, 36, 1); pointer-events: none;
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.9); pointer-events: none;
             animation: floatUp 0.7s ease-out forwards;
         }
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-130px) scale(1.5); }
+            100% { opacity: 0; transform: translateY(-130px) scale(1.4); }
         }
         .tab-content { display: none; }
         .tab-content.active { display: flex; flex-direction: column; }
-        .glass-panel { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .side-panel-btn { writing-mode: vertical-lr; text-orientation: mixed; }
+        .side-btn { background: rgba(22, 33, 49, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .glass-panel { background: rgba(18, 26, 38, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body class="flex flex-col h-screen justify-between">
 
-    <!-- Top Profile & Balance Header -->
-    <div class="px-4 pt-3 flex justify-between items-center bg-gray-950/90 pb-2.5 border-b border-gray-800/80 z-20">
-        <div class="flex items-center space-x-2.5">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                <i class="fa-solid fa-crown text-gray-950 text-base font-bold"></i>
+    <!-- Top Header & Stats -->
+    <div class="px-3 pt-2.5 flex justify-between items-center bg-gray-950/90 pb-2 border-b border-gray-800 z-20">
+        <div class="flex items-center space-x-2">
+            <div class="relative">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-yellow-400 flex items-center justify-center border border-amber-300">
+                    <i class="fa-solid fa-user-ninja text-gray-950 text-lg font-black"></i>
+                </div>
+                <span class="absolute -bottom-1 -right-1 bg-blue-600 text-[9px] font-bold px-1 rounded text-white">Lv.15</span>
             </div>
             <div>
-                <h2 class="text-[10px] font-bold text-gray-400">STATUS</h2>
-                <p class="text-xs font-extrabold text-amber-400">Elite Master</p>
+                <div class="w-16 bg-gray-800 h-2 rounded-full overflow-hidden border border-gray-700 mt-1">
+                    <div class="bg-blue-500 h-full w-2/3"></div>
+                </div>
+                <span class="text-[9px] text-gray-400 font-bold">65% Progress</span>
             </div>
         </div>
-        <div class="glass-panel px-3.5 py-1.5 rounded-2xl flex items-center space-x-2">
-            <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
-            <span id="top-balance" class="font-black text-sm text-amber-300">0</span>
+
+        <!-- Currencies Bar -->
+        <div class="flex items-center space-x-2">
+            <div class="glass-panel px-2.5 py-1 rounded-xl flex items-center space-x-1.5 border-amber-500/30">
+                <i class="fa-solid fa-coins text-amber-400 text-xs"></i>
+                <span id="top-balance" class="font-black text-xs text-amber-300">22.3T</span>
+            </div>
+            <div class="glass-panel px-2.5 py-1 rounded-xl flex items-center space-x-1.5 border-blue-500/30">
+                <i class="fa-solid fa-gem text-blue-400 text-xs"></i>
+                <span class="font-black text-xs text-blue-300">70,680</span>
+            </div>
         </div>
     </div>
 
-    <!-- MAIN TAB: TAP GAME WITH SIDE PANELS & STREAK -->
-    <div id="tab-tap" class="tab-content active flex-1 p-3 justify-between items-center relative overflow-hidden">
+    <!-- MAIN HOME TAB: BUMS EXACT LAYOUT -->
+    <div id="tab-home" class="tab-content active flex-1 p-2 justify-between items-center relative overflow-hidden">
         
-        <!-- TOP CORNERS: 24H Daily Streak & Bonus Drop -->
-        <div class="w-full flex justify-between items-center px-1 z-10">
-            <div onclick="claimStreak()" id="streak-btn" class="glass-panel px-3 py-2 rounded-xl flex items-center space-x-2 cursor-pointer border-amber-500/30 active:scale-95 transition">
-                <i class="fa-solid fa-fire text-amber-400 text-base animate-bounce"></i>
-                <div>
-                    <p class="text-[9px] text-gray-400 font-bold">24H STREAK</p>
-                    <p class="text-xs font-black text-amber-300" id="streak-timer">Claim +2,500</p>
+        <!-- Background Lighting Effect -->
+        <div class="absolute inset-0 bg-radial from-teal-900/20 via-transparent to-transparent pointer-events-none"></div>
+
+        <!-- LEFT SIDE MENU BUTTONS -->
+        <div class="absolute left-2 top-14 flex flex-col space-y-2 z-10">
+            <div onclick="triggerAction('Special Offer unlocked!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-fire text-amber-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">OFFER</p>
+            </div>
+            <div onclick="triggerAction('Upgrades opened!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-arrow-up-right-dots text-emerald-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">UPGRADE</p>
+            </div>
+            <div onclick="triggerAction('Passport verified!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-id-card text-blue-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">PASSPORT</p>
+            </div>
+            <div onclick="triggerAction('Skinshop opened!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-shirt text-purple-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">SKINSHOP</p>
+            </div>
+            <div onclick="switchTab('tasks')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-list-check text-yellow-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">TASK</p>
+            </div>
+            <div onclick="triggerAction('Invite link copied!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-user-plus text-pink-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">INVITE</p>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE MENU BUTTONS -->
+        <div class="absolute right-2 top-14 flex flex-col space-y-2 z-10">
+            <div onclick="triggerAction('Daily task claimed!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-calendar-days text-amber-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">DAILY</p>
+            </div>
+            <div onclick="triggerAction('Avatar battle queued!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-shield-halved text-rose-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">BATTLE</p>
+            </div>
+            <div onclick="triggerAction('Expedition started!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-compass text-sky-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">EXPEDITION</p>
+            </div>
+            <div onclick="triggerAction('Autotap activated!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-robot text-purple-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">AUTOTAP</p>
+            </div>
+            <div onclick="triggerAction('Launchpad open!')" class="side-btn p-2 rounded-xl text-center cursor-pointer active:scale-95 w-14">
+                <i class="fa-solid fa-rocket text-indigo-400 text-sm"></i>
+                <p class="text-[9px] font-black text-gray-200 mt-0.5">LAUNCH</p>
+            </div>
+        </div>
+
+        <!-- Center Big Counter -->
+        <div class="text-center z-10 mt-1">
+            <span id="balance" class="text-3xl font-black tracking-tight text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">22,294,936,245,44</span>
+        </div>
+
+        <!-- Central Character & Tap Zone -->
+        <div id="tap-zone" class="tap-btn relative w-48 h-64 flex flex-col items-center justify-center cursor-pointer z-10 my-auto">
+            <div class="absolute inset-0 bg-teal-500/10 rounded-full blur-xl pointer-events-none"></div>
+            <i class="fa-solid fa-user-secret text-8xl text-teal-400 drop-shadow-[0_0_25px_rgba(45,212,191,0.6)] mb-2"></i>
+            <h2 class="text-2xl font-black tracking-wider text-white drop-shadow-md">Tap Me</h2>
+        </div>
+
+        <!-- Bottom Energy & Per Tap Stats -->
+        <div class="w-full px-4 mb-1 z-10 flex flex-col space-y-1.5">
+            <div class="flex justify-between items-center">
+                <div class="w-36 bg-gray-900 h-3 rounded-full overflow-hidden border border-gray-800 p-0.5">
+                    <div id="energy-bar" class="bg-blue-500 h-full w-3/4 rounded-full"></div>
                 </div>
-            </div>
-            <div onclick="claimBonusDrop()" class="glass-panel px-3 py-2 rounded-xl flex items-center space-x-2 cursor-pointer border-purple-500/30 active:scale-95 transition">
-                <div class="text-right">
-                    <p class="text-[9px] text-gray-400 font-bold">MEGA DROP</p>
-                    <p class="text-xs font-black text-purple-400">Ready!</p>
+                <div class="flex items-center space-x-1.5 bg-gray-900/90 px-3 py-1 rounded-xl border border-gray-800">
+                    <i class="fa-solid fa-coins text-amber-400 text-xs"></i>
+                    <span class="font-black text-xs text-white">+3,522</span>
+                    <span class="text-[10px] text-gray-400">Per tap</span>
                 </div>
-                <i class="fa-solid fa-gift text-purple-400 text-base animate-pulse"></i>
-            </div>
-        </div>
-
-        <!-- LEFT & RIGHT SIDE PANELS (Aapki lines wali jagah par extra engaging tasks/boosts) -->
-        <div class="absolute left-1 top-1/2 -translate-y-1/2 flex flex-col space-y-2 z-10">
-            <div onclick="openMiniGame('spin')" class="glass-panel p-2.5 rounded-xl text-center cursor-pointer hover:bg-gray-800 transition active:scale-95 shadow-lg">
-                <i class="fa-solid fa-dharmachakra text-amber-400 text-lg mb-1"></i>
-                <span class="side-panel-btn text-[10px] font-bold text-gray-300 tracking-wider">SPIN WHEEL</span>
-            </div>
-            <div onclick="openMiniGame('lottery')" class="glass-panel p-2.5 rounded-xl text-center cursor-pointer hover:bg-gray-800 transition active:scale-95 shadow-lg">
-                <i class="fa-solid fa-ticket text-emerald-400 text-lg mb-1"></i>
-                <span class="side-panel-btn text-[10px] font-bold text-gray-300 tracking-wider">JACKPOT</span>
-            </div>
-        </div>
-
-        <div class="absolute right-1 top-1/2 -translate-y-1/2 flex flex-col space-y-2 z-10">
-            <div onclick="openMiniGame('mine')" class="glass-panel p-2.5 rounded-xl text-center cursor-pointer hover:bg-gray-800 transition active:scale-95 shadow-lg">
-                <i class="fa-solid fa-hammer text-blue-400 text-lg mb-1"></i>
-                <span class="side-panel-btn text-[10px] font-bold text-gray-300 tracking-wider">AUTO MINER</span>
-            </div>
-            <div onclick="openMiniGame('vault')" class="glass-panel p-2.5 rounded-xl text-center cursor-pointer hover:bg-gray-800 transition active:scale-95 shadow-lg">
-                <i class="fa-solid fa-vault text-purple-400 text-lg mb-1"></i>
-                <span class="side-panel-btn text-[10px] font-bold text-gray-300 tracking-wider">SECRET VAULT</span>
-            </div>
-        </div>
-
-        <!-- Center Score Display -->
-        <div class="text-center my-1 z-10">
-            <p class="text-[10px] text-gray-400 uppercase tracking-widest font-black">TOTAL COINS</p>
-            <div class="flex items-center justify-center space-x-2">
-                <i class="fa-solid fa-coins text-2xl text-amber-400"></i>
-                <span id="balance" class="text-4xl font-black tracking-tight text-white">0</span>
-            </div>
-        </div>
-
-        <!-- Main Giant Tap Button -->
-        <div id="tap-zone" class="tap-btn relative w-56 h-56 rounded-full bg-gradient-to-b from-amber-400 via-yellow-500 to-amber-700 p-2 shadow-[0_0_50px_rgba(245,158,11,0.4)] cursor-pointer flex items-center justify-center border-4 border-amber-200 z-10 my-2">
-            <div class="w-full h-full rounded-full bg-gray-950 flex items-center justify-center border-2 border-amber-500/50 shadow-inner">
-                <i class="fa-solid fa-bolt text-6xl text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.9)] animate-pulse"></i>
-            </div>
-        </div>
-
-        <!-- Energy Bar -->
-        <div class="w-full max-w-xs mb-1 z-10">
-            <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
-                <span class="flex items-center gap-1"><i class="fa-solid fa-bolt text-amber-400"></i> Energy</span>
-                <div><span id="energy">1500</span> / <span id="max-energy">1500</span></div>
-            </div>
-            <div class="w-full bg-gray-900 h-3 rounded-full overflow-hidden p-0.5 border border-gray-800">
-                <div id="energy-bar" class="bg-gradient-to-r from-amber-500 to-yellow-300 h-full w-full rounded-full transition-all duration-100"></div>
             </div>
         </div>
     </div>
 
-    <!-- TAB: BOOSTS -->
-    <div id="tab-boost" class="tab-content flex-1 p-4 overflow-y-auto space-y-3">
-        <div>
-            <h2 class="text-lg font-black text-white">Power Store</h2>
-            <p class="text-xs text-gray-400">Upgrade your earning multiplier.</p>
-        </div>
-        <div class="space-y-2.5">
-            <div onclick="buyMultiTap()" class="glass-panel p-3.5 rounded-xl flex justify-between items-center cursor-pointer active:scale-98">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-hand-pointer"></i></div>
-                    <div>
-                        <h3 class="font-bold text-xs text-white">Multitap Power</h3>
-                        <p class="text-[11px] text-gray-400">+1 per tap (Lvl <span id="multi-lvl">1</span>)</p>
-                    </div>
-                </div>
-                <button class="bg-amber-500 text-gray-950 font-black px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
-                    <i class="fa-solid fa-coins"></i> <span id="multi-cost">100</span>
-                </button>
+    <!-- TAB 2: GAME CENTER -->
+    <div id="tab-game" class="tab-content flex-1 p-4 overflow-y-auto space-y-3">
+        <h2 class="text-lg font-black text-amber-400">Game Center</h2>
+        <div onclick="triggerAction('Mini-game launched!')" class="glass-panel p-4 rounded-2xl cursor-pointer flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-sm">Lucky Battle Arena</h3>
+                <p class="text-xs text-gray-400">Play & win massive coin rewards.</p>
             </div>
+            <button class="bg-amber-500 text-gray-950 font-bold px-3 py-1.5 rounded-xl text-xs">Play</button>
         </div>
     </div>
 
-    <!-- TAB: TASKS -->
-    <div id="tab-tasks" class="tab-content flex-1 p-4 overflow-y-auto space-y-3">
-        <div>
-            <h2 class="text-lg font-black text-white">Active Missions</h2>
-            <p class="text-xs text-gray-400">Complete tasks for huge coin bonuses.</p>
-        </div>
-        <div class="space-y-2.5">
-            <div id="task-1" onclick="completeTask('task-1', 10000)" class="glass-panel p-3.5 rounded-xl flex justify-between items-center cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-lg bg-sky-500/20 flex items-center justify-center text-sky-400"><i class="fa-brands fa-telegram text-lg"></i></div>
-                    <div>
-                        <h3 class="font-bold text-xs text-white">Join Community Channel</h3>
-                        <p class="text-[11px] text-amber-400 font-bold">+10,000 Coins</p>
-                    </div>
-                </div>
-                <button class="bg-gray-800 text-amber-400 border border-amber-500/30 font-bold px-3 py-1 rounded-lg text-xs">Claim</button>
-            </div>
+    <!-- TAB 3: SLOT -->
+    <div id="tab-slot" class="tab-content flex-1 p-4 overflow-y-auto space-y-3">
+        <h2 class="text-lg font-black text-amber-400">Slot Machine</h2>
+        <div onclick="triggerAction('Spinning slot... Win!')" class="glass-panel p-6 text-center rounded-2xl cursor-pointer">
+            <i class="fa-solid fa-dice text-4xl text-amber-400 mb-2"></i>
+            <h3 class="font-bold text-base">Tap to Spin & Win</h3>
+            <p class="text-xs text-gray-400 mt-1">Get 3 matching icons for jackpot!</p>
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
-    <div class="glass-panel border-t border-gray-800 px-6 py-2 flex justify-around items-center z-20">
-        <button onclick="switchTab('tap')" id="nav-tap" class="flex flex-col items-center text-amber-400 transition">
-            <i class="fa-solid fa-gamepad text-lg"></i>
-            <span class="text-[10px] mt-0.5 font-bold">Game</span>
+    <!-- TAB 4: TREASURE HUNTER -->
+    <div id="tab-treasure" class="tab-content flex-1 p-4 overflow-y-auto space-y-3">
+        <h2 class="text-lg font-black text-amber-400">Treasure Hunter</h2>
+        <div onclick="triggerAction('Chest opened! +50,000 Coins')" class="glass-panel p-4 rounded-2xl cursor-pointer flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-sm">Mystery Gold Chest</h3>
+                <p class="text-xs text-gray-400">Unlock to reveal hidden treasures.</p>
+            </div>
+            <button class="bg-purple-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs">Open</button>
+        </div>
+    </div>
+
+    <!-- TAB 5: ALPHA -->
+    <div id="tab-alpha" class="tab-content flex-1 p-4 overflow-y-auto space-y-3">
+        <h2 class="text-lg font-black text-amber-400">Alpha Ecosystem</h2>
+        <div class="glass-panel p-4 rounded-2xl">
+            <h3 class="font-bold text-sm">Exclusive Node Status</h3>
+            <p class="text-xs text-gray-400 mt-1">Connected to decentralized Bums liquidity cluster.</p>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (5 Exact Tabs like Bums) -->
+    <div class="glass-panel border-t border-gray-800 px-2 py-2 flex justify-around items-center z-20">
+        <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-amber-400 transition">
+            <i class="fa-solid fa-house text-base"></i>
+            <span class="text-[9px] mt-1 font-bold">HOME</span>
         </button>
-        <button onclick="switchTab('boost')" id="nav-boost" class="flex flex-col items-center text-gray-400 transition">
-            <i class="fa-solid fa-rocket text-lg"></i>
-            <span class="text-[10px] mt-0.5 font-bold">Boosts</span>
+        <button onclick="switchTab('game')" id="nav-game" class="flex flex-col items-center text-gray-400 transition">
+            <i class="fa-solid fa-gamepad text-base"></i>
+            <span class="text-[9px] mt-1 font-bold">GAME CENTER</span>
         </button>
-        <button onclick="switchTab('tasks')" id="nav-tasks" class="flex flex-col items-center text-gray-400 transition">
-            <i class="fa-solid fa-list-check text-lg"></i>
-            <span class="text-[10px] mt-0.5 font-bold">Tasks</span>
+        <button onclick="switchTab('slot')" id="nav-slot" class="flex flex-col items-center text-gray-400 transition">
+            <i class="fa-solid fa-dice text-base"></i>
+            <span class="text-[9px] mt-1 font-bold">SLOT</span>
+        </button>
+        <button onclick="switchTab('treasure')" id="nav-treasure" class="flex flex-col items-center text-gray-400 transition">
+            <i class="fa-solid fa-chess-rook text-base"></i>
+            <span class="text-[9px] mt-1 font-bold">TREASURE</span>
+        </button>
+        <button onclick="switchTab('alpha')" id="nav-alpha" class="flex flex-col items-center text-gray-400 transition">
+            <i class="fa-solid fa-box-archive text-base"></i>
+            <span class="text-[9px] mt-1 font-bold">ALPHA</span>
         </button>
     </div>
 
     <script>
-        let balance = 0;
-        let energy = 1500;
-        let maxEnergy = 1500;
-        let tapValue = 1;
-        let multiCost = 100;
-        let multiLvl = 1;
-
+        let balance = 2229493624544;
         const balanceEl = document.getElementById('balance');
         const topBalanceEl = document.getElementById('top-balance');
-        const energyEl = document.getElementById('energy');
-        const maxEnergyEl = document.getElementById('max-energy');
-        const energyBar = document.getElementById('energy-bar');
         const tapZone = document.getElementById('tap-zone');
 
-        function updateUI() {
-            balanceEl.innerText = balance.toLocaleString();
-            topBalanceEl.innerText = balance.toLocaleString();
-            energyEl.innerText = energy;
-            maxEnergyEl.innerText = maxEnergy;
-            energyBar.style.width = (energy / maxEnergy * 100) + '%';
-        }
-
         tapZone.addEventListener('pointerdown', (e) => {
-            if (energy < tapValue) return;
-            balance += tapValue;
-            energy -= tapValue;
-            updateUI();
+            balance += 3522;
+            topBalanceEl.innerText = (balance / 1e9).toFixed(1) + 'B';
+            balanceEl.innerText = balance.toLocaleString();
 
             const floatText = document.createElement('div');
             floatText.className = 'float-text';
-            floatText.innerText = '+' + tapValue;
-            floatText.style.left = (e.clientX - 20) + 'px';
+            floatText.innerText = '+3,522';
+            floatText.style.left = (e.clientX - 25) + 'px';
             floatText.style.top = (e.clientY - 40) + 'px';
             document.body.appendChild(floatText);
             setTimeout(() => floatText.remove(), 700);
         });
-
-        setInterval(() => {
-            if (energy < maxEnergy) {
-                energy = Math.min(maxEnergy, energy + 8);
-                updateUI();
-            }
-        }, 1000);
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -233,53 +243,8 @@ HTML_LAYOUT = """
             document.getElementById('nav-' + tabName).className = 'flex flex-col items-center text-amber-400 transition';
         }
 
-        function claimStreak() {
-            balance += 2500;
-            updateUI();
-            const btn = document.getElementById('streak-btn');
-            btn.style.opacity = '0.5';
-            document.getElementById('streak-timer').innerText = 'Claimed!';
-            setTimeout(() => {
-                btn.style.opacity = '1';
-                document.getElementById('streak-timer').innerText = 'Claim +2,500';
-            }, 10000);
-        }
-
-        function claimBonusDrop() {
-            balance += 5000;
-            updateUI();
-            alert('🎉 Mega Drop Claimed: +5,000 Coins added!');
-        }
-
-        function openMiniGame(type) {
-            let reward = Math.floor(Math.random() * 3000) + 1000;
-            balance += reward;
-            updateUI();
-            alert('🎁 ' + type.toUpperCase() + ' Bonus! You won +' + reward.toLocaleString() + ' Coins!');
-        }
-
-        function buyMultiTap() {
-            if (balance >= multiCost) {
-                balance -= multiCost;
-                tapValue += 1;
-                multiLvl += 1;
-                multiCost *= 2;
-                document.getElementById('multi-lvl').innerText = multiLvl;
-                document.getElementById('multi-cost').innerText = multiCost;
-                updateUI();
-            }
-        }
-
-        function completeTask(taskId, reward) {
-            const taskCard = document.getElementById(taskId);
-            const btn = taskCard.querySelector('button');
-            if (btn.innerText === 'Claim') {
-                balance += reward;
-                updateUI();
-                btn.innerText = 'Done';
-                btn.className = 'bg-emerald-600 text-white font-bold px-3 py-1 rounded-lg text-xs';
-                taskCard.style.opacity = '0.6';
-            }
+        function triggerAction(msg) {
+            alert('⚡ ' + msg);
         }
     </script>
 </body>
