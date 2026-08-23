@@ -3,77 +3,131 @@ import os
 
 app = Flask(__name__)
 
-HTML_LAYOUT = """
+HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Tap to Earn Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusAI Pro - Financial & Task Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { user-select: none; -webkit-user-select: none; background-color: #0b0e14; color: white; font-family: sans-serif; }
-        .tap-btn { transition: transform 0.05s ease; }
-        .tap-btn:active { transform: scale(0.92); }
-        .float-text {
-            position: absolute; font-weight: 800; font-size: 1.8rem; color: #f59e0b;
-            text-shadow: 0 0 10px rgba(245, 158, 11, 0.8); pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-        }
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-100px) scale(1.3); }
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="flex flex-col h-screen justify-between overflow-hidden">
-
-    <!-- Top Header -->
-    <div class="px-5 pt-4 flex justify-between items-center bg-gray-900/50 pb-3 border-b border-gray-800">
+<body class="min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="glass-card border-b border-gray-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-                <i class="fa-solid fa-user-ninja text-amber-400"></i>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <i class="fa-solid fa-network-wired text-white text-lg"></i>
             </div>
             <div>
-                <h2 class="text-sm font-bold text-gray-200">PRO GAMER</h2>
-                <p class="text-xs text-amber-400 font-semibold">Level 1 / 30</p>
+                <h1 class="font-bold text-lg tracking-wide bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent">NexusAI Pro</h1>
+                <p class="text-xs text-gray-400">Enterprise Cloud Dashboard</p>
             </div>
         </div>
-        <div class="bg-gray-800/80 px-3 py-1.5 rounded-full border border-gray-700 flex items-center space-x-2">
-            <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
-            <span id="top-balance" class="font-bold text-sm">0</span>
+        <div class="flex items-center space-x-3">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-500 animate-pulse"></span> System Live
+            </span>
         </div>
-    </div>
+    </nav>
 
-    <!-- MAIN TAB: TAP GAME -->
-    <div id="tab-tap" class="tab-content active flex-1 flex flex-col items-center justify-between p-5">
-        <div class="text-center mt-2">
-            <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold mb-1">TOTAL BALANCE</p>
-            <div class="flex items-center justify-center space-x-3">
-                <i class="fa-solid fa-coins text-4xl text-amber-400"></i>
-                <span id="balance" class="text-5xl font-black tracking-tight">0</span>
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="glass-card p-5 rounded-2xl shadow-xl">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-sm font-medium">Total Portfolio</span>
+                    <i class="fa-solid fa-wallet text-blue-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white">$24,892.50</h3>
+                <span class="text-xs text-emerald-400 font-semibold mt-1 inline-block"><i class="fa-solid fa-arrow-trend-up"></i> +14.2% this month</span>
+            </div>
+            <div class="glass-card p-5 rounded-2xl shadow-xl">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-sm font-medium">Active Tasks</span>
+                    <i class="fa-solid fa-list-check text-indigo-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white">12 / 15</h3>
+                <span class="text-xs text-indigo-400 font-semibold mt-1 inline-block">80% Efficiency</span>
+            </div>
+            <div class="glass-card p-5 rounded-2xl shadow-xl">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-sm font-medium">Cloud Nodes</span>
+                    <i class="fa-solid fa-server text-purple-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white">99.98%</h3>
+                <span class="text-xs text-purple-400 font-semibold mt-1 inline-block">Zero Latency</span>
+            </div>
+            <div class="glass-card p-5 rounded-2xl shadow-xl">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-sm font-medium">Security Level</span>
+                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white">Maximum</h3>
+                <span class="text-xs text-amber-400 font-semibold mt-1 inline-block">Protected by AI</span>
             </div>
         </div>
 
-        <div id="tap-zone" class="tap-btn relative w-64 h-64 rounded-full bg-gradient-to-b from-amber-400 to-amber-600 p-3 shadow-[0_0_50px_rgba(245,158,11,0.3)] cursor-pointer my-auto flex items-center justify-center border-4 border-amber-300">
-            <div class="w-full h-full rounded-full bg-gray-950 flex items-center justify-center border-2 border-amber-500/50">
-                <i class="fa-solid fa-paw text-7xl text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]"></i>
+        <!-- Interactive Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-2">Performance Analytics</h2>
+                    <p class="text-sm text-gray-400 mb-6">Real-time telemetry and resource usage tracking across clusters.</p>
+                </div>
+                <div class="h-64 flex items-center justify-center border border-dashed border-gray-800 rounded-xl bg-gray-900/40">
+                    <div class="text-center space-y-2">
+                        <i class="fa-solid fa-chart-line text-4xl text-blue-500 animate-bounce"></i>
+                        <p class="text-sm text-gray-400">Telemetry Stream Connected & Active</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Panel -->
+            <div class="glass-card p-6 rounded-2xl shadow-xl space-y-4">
+                <h2 class="text-lg font-bold text-white">Quick Control</h2>
+                <p class="text-sm text-gray-400">Execute instant infrastructure commands.</p>
+                <div class="space-y-3 pt-2">
+                    <button onclick="triggerAction('Cluster Sync initiated...')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-lg shadow-blue-600/20 text-sm flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-rotate"></i> <span>Sync Clusters</span>
+                    </button>
+                    <button onclick="triggerAction('Security audit completed successfully.')" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold py-3 px-4 rounded-xl transition duration-200 border border-gray-700 text-sm flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-shield"></i> <span>Run Security Audit</span>
+                    </button>
+                </div>
+                <div id="action-status" class="text-xs text-emerald-400 font-medium text-center pt-2 h-6"></div>
             </div>
         </div>
+    </main>
 
-        <div class="w-full max-w-xs mb-2">
-            <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
-                <span class="flex items-center gap-1"><i class="fa-solid fa-bolt text-amber-400"></i> Energy</span>
-                <div><span id="energy">500</span> / <span id="max-energy">500</span></div>
-            </div>
-            <div class="w-full bg-gray-800 h-3 rounded-full overflow-hidden border border-gray-700">
-                <div id="energy-bar" class="bg-gradient-to-r from-amber-500 to-yellow-300 h-full w-full transition-all duration-100"></div>
-            </div>
-        </div>
-    </div>
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-4 text-center text-xs text-gray-500">
+        &copy; 2026 NexusAI Systems Inc. All rights reserved. Powered by Render Cloud.
+    </footer>
 
-    <!-- TAB: BOOSTS -->
-    <div id="tab-boost" class="tab-content flex-1 p-5 overfl
+    <script>
+        function triggerAction(message) {
+            const statusEl = document.getElementById('action-status');
+            statusEl.innerText = message;
+            setTimeout(() => {
+                statusEl.innerText = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+"""
+
+@app.route('/')
+def index():
+    return render_template_string(HTML_TEMPLATE)
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
