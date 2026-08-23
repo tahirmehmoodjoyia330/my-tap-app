@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Tasks • LuxMine{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 pt-6">
+    <h1 class="text-xl font-bold mb-1">🎯 Tasks</h1>
+    <p class="text-sm text-slate-400 mb-5">Complete tasks to earn coins</p>
+
+    <div class="space-y-3">
+        {% for task in tasks %}
+        {% set is_done = completed.get(task.id, False) %}
+        <div class="glass rounded-2xl p-4 {% if is_done %}opacity-60{% endif %}">
+            <div class="flex items-start gap-3">
+                <div class="text-2xl mt-0.5">{{ task.icon }}</div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <h3 class="font-semibold text-white text-sm">{{ task.title }}</h3>
+                        <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full 
+                            {% if task.task_type == 'daily' %}bg-blue-500/20 text-blue-300{% else %}bg-purple-500/20 text-purple-300{% endif %}">
+                            {{ task.task_type }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-2">{{ task.description }}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-semibold text-amber-400">+{{ task.reward_coins|int }} 🪙</span>
+                        {% if is_done %}
+                            <span class="text-xs text-emerald-400 font-medium">✓ Completed</span>
+                        {% else %}
+                            <button onclick="completeTask({{ task.id }}, this)"
+                                    class="btn-gold text-dark-900 text-xs font-bold px-4 py-1.5 rounded-lg">
+                                Claim
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <p class="text-center text-slate-500 py-10">No tasks available</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function completeTask(taskId, btn) {
+    btn.disabled = true;
+    btn.textContent = '...';
+    try {
+        const res = await fetch(`/complete_task/${taskId}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+            btn.parentElement.innerHTML = '<span class="text-xs text-emerald-400 font-medium">✓ Completed</span>';
+            // Optional: update coin display if present
+        } else {
+            alert(data.message);
+            btn.disabled = false;
+            btn.textContent = 'Claim';
+        }
+    } catch (e) {
+        alert('Error');
+        btn.disabled = false;
+        btn.textContent = 'Claim';
+    }
+}
+</script>
+{% endblock %}

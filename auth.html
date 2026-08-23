@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Register' if mode == 'register' else 'Login' }} • LuxMine{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col items-center justify-center px-5 py-10">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+        <div class="text-5xl mb-2">⛏️</div>
+        <h1 class="text-3xl font-extrabold">
+            <span class="bg-gradient-to-r from-amber-300 to-yellow-500 bg-clip-text text-transparent">Lux</span><span class="text-white">Mine</span>
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">{{ 'Create your account' if mode == 'register' else 'Welcome back' }}</p>
+    </div>
+
+    <div class="w-full max-w-sm glass rounded-3xl p-6 shadow-glow">
+        <form method="POST" class="space-y-4">
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Username</label>
+                <input type="text" name="username" required minlength="3"
+                    class="w-full bg-dark-700 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/30 transition"
+                    placeholder="Choose a username" autocomplete="username">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
+                <input type="password" name="password" required minlength="4"
+                    class="w-full bg-dark-700 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/30 transition"
+                    placeholder="••••••••" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}">
+            </div>
+
+            {% if mode == 'register' %}
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Confirm Password</label>
+                <input type="password" name="confirm" required minlength="4"
+                    class="w-full bg-dark-700 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/30 transition"
+                    placeholder="••••••••">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Referral Code <span class="text-slate-600">(optional)</span></label>
+                <input type="text" name="referral" value="{{ ref or '' }}"
+                    class="w-full bg-dark-700 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/30 transition uppercase"
+                    placeholder="ABC12345">
+            </div>
+            {% endif %}
+
+            <button type="submit" class="w-full btn-gold text-dark-900 font-bold py-3.5 rounded-xl text-base tracking-wide mt-2">
+                {{ 'Create Account' if mode == 'register' else 'Login' }}
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-slate-400 mt-5">
+            {% if mode == 'register' %}
+                Already have an account?
+                <a href="{{ url_for('login') }}" class="text-gold-400 font-semibold hover:underline">Login</a>
+            {% else %}
+                New here?
+                <a href="{{ url_for('register') }}" class="text-gold-400 font-semibold hover:underline">Register</a>
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endblock %}

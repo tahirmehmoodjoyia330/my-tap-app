@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Dashboard • LuxMine{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 pt-6">
+    <h1 class="text-xl font-bold mb-5">📊 Dashboard</h1>
+
+    <!-- Main stats -->
+    <div class="grid grid-cols-2 gap-3 mb-5">
+        <div class="glass rounded-2xl p-4">
+            <p class="text-xs text-slate-400 mb-1">Total Coins</p>
+            <p class="text-2xl font-bold text-amber-400">🪙 {{ '%.0f'|format(user.coins) }}</p>
+        </div>
+        <div class="glass-gold rounded-2xl p-4">
+            <p class="text-xs text-slate-400 mb-1">Premium Stones</p>
+            <p class="text-2xl font-bold text-gold-400">🪨 {{ user.stones }}</p>
+        </div>
+        <div class="glass rounded-2xl p-4">
+            <p class="text-xs text-slate-400 mb-1">Level</p>
+            <p class="text-2xl font-bold text-white">{{ user.level }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ car.name }}</p>
+        </div>
+        <div class="glass rounded-2xl p-4">
+            <p class="text-xs text-slate-400 mb-1">Mining Streak</p>
+            <p class="text-2xl font-bold text-orange-400">{{ user.streak }} 🔥</p>
+        </div>
+    </div>
+
+    <!-- Mining rate -->
+    <div class="glass rounded-2xl p-4 mb-5 flex items-center justify-between">
+        <div>
+            <p class="text-xs text-slate-400">Current Mining Rate</p>
+            <p class="text-lg font-bold text-emerald-400">{{ '%.1f'|format(user.get_mining_rate()) }} coins / hour</p>
+        </div>
+        <span class="text-3xl">⚡</span>
+    </div>
+
+    <!-- Recent Activity -->
+    <h2 class="text-sm font-semibold text-slate-300 mb-3">Recent Activity</h2>
+    <div class="space-y-2">
+        {% if transactions %}
+            {% for tx in transactions %}
+            <div class="glass rounded-xl px-4 py-3 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium">{{ tx.description or tx.type }}</p>
+                    <p class="text-xs text-slate-500">{{ tx.created_at.strftime('%d %b • %H:%M') if tx.created_at else '' }}</p>
+                </div>
+                <span class="font-semibold text-sm {% if tx.currency == 'stones' %}text-gold-400{% else %}text-amber-400{% endif %}">
+                    +{{ '%.0f'|format(tx.amount) if tx.currency == 'coins' else tx.amount|int }} {{ '🪨' if tx.currency == 'stones' else '🪙' }}
+                </span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-slate-500 text-sm text-center py-6">No activity yet. Start mining!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

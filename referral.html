@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Referral • LuxMine{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 pt-6">
+    <h1 class="text-xl font-bold mb-1">👥 Invite Friends</h1>
+    <p class="text-sm text-slate-400 mb-5">Earn 150 coins for every friend who joins</p>
+
+    <!-- Referral Code Card -->
+    <div class="glass-gold rounded-3xl p-5 mb-5 text-center">
+        <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">Your Referral Code</p>
+        <p class="text-3xl font-extrabold tracking-widest text-gold-400 mb-4" id="ref-code">{{ user.referral_code }}</p>
+        
+        <div class="bg-dark-800 rounded-xl p-3 mb-4 break-all">
+            <p class="text-xs text-slate-400 mb-1">Your Link</p>
+            <p class="text-sm text-white font-medium" id="ref-link">{{ referral_link }}</p>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="copyLink()" class="flex-1 btn-gold text-dark-900 font-bold py-3 rounded-xl text-sm">
+                Copy Link
+            </button>
+            <button onclick="shareLink()" class="flex-1 glass border border-gold-500/30 text-gold-400 font-bold py-3 rounded-xl text-sm">
+                Share
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="glass rounded-2xl p-4 text-center">
+            <p class="text-2xl font-bold text-white">{{ ref_count }}</p>
+            <p class="text-xs text-slate-400">Friends Invited</p>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+            <p class="text-2xl font-bold text-amber-400">{{ ref_count * 150 }}</p>
+            <p class="text-xs text-slate-400">Coins Earned</p>
+        </div>
+    </div>
+
+    <!-- Invited list -->
+    <h2 class="text-sm font-semibold text-slate-300 mb-3">Recent Invites</h2>
+    <div class="space-y-2">
+        {% if ref_users %}
+            {% for u in ref_users %}
+            <div class="glass rounded-xl px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-dark-600 flex items-center justify-center text-sm font-bold text-gold-400">
+                        {{ u.username[0]|upper }}
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">{{ u.username }}</p>
+                        <p class="text-xs text-slate-500">Level {{ u.level }}</p>
+                    </div>
+                </div>
+                <span class="text-xs text-slate-400">{{ u.created_at.strftime('%d %b') if u.created_at else '' }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-slate-500 text-sm py-8">No referrals yet. Share your link!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyLink() {
+    const link = document.getElementById('ref-link').textContent;
+    navigator.clipboard.writeText(link).then(() => {
+        alert('Referral link copied! 🔗');
+    });
+}
+
+function shareLink() {
+    const link = document.getElementById('ref-link').textContent;
+    if (navigator.share) {
+        navigator.share({
+            title: 'Join LuxMine',
+            text: 'Mine coins & upgrade luxury cars with me on LuxMine!',
+            url: link
+        });
+    } else {
+        copyLink();
+    }
+}
+</script>
+{% endblock %}

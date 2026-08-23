@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Wallet • LuxMine{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 pt-6">
+    <h1 class="text-xl font-bold mb-5">💎 Wallet</h1>
+
+    <!-- Balances -->
+    <div class="glass-gold rounded-3xl p-6 mb-6 text-center">
+        <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Available Balance</p>
+        <p class="text-4xl font-extrabold text-white mb-1">🪙 {{ '%.2f'|format(user.coins) }}</p>
+        <p class="text-gold-400 font-semibold">🪨 {{ user.stones }} STONE</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="glass rounded-2xl p-4 text-center">
+            <p class="text-xs text-slate-400">Coins</p>
+            <p class="text-xl font-bold text-amber-400">{{ '%.0f'|format(user.coins) }}</p>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+            <p class="text-xs text-slate-400">Stones</p>
+            <p class="text-xl font-bold text-gold-400">{{ user.stones }}</p>
+        </div>
+    </div>
+
+    <!-- Note -->
+    <div class="glass rounded-2xl p-4 mb-6 text-sm text-slate-400">
+        <p>💡 <strong class="text-white">Note:</strong> Withdrawal & conversion features coming soon. Keep mining and collecting STONEs!</p>
+    </div>
+
+    <!-- History -->
+    <h2 class="text-sm font-semibold text-slate-300 mb-3">Transaction History</h2>
+    <div class="space-y-2 max-h-[50vh] overflow-y-auto no-scrollbar">
+        {% if transactions %}
+            {% for tx in transactions %}
+            <div class="glass rounded-xl px-4 py-3 flex items-center justify-between">
+                <div class="min-w-0">
+                    <p class="text-sm font-medium truncate">{{ tx.description or tx.type }}</p>
+                    <p class="text-xs text-slate-500">{{ tx.created_at.strftime('%d %b %Y • %H:%M') if tx.created_at else '' }}</p>
+                </div>
+                <span class="font-semibold text-sm whitespace-nowrap ml-3
+                    {% if tx.currency == 'stones' %}text-gold-400{% else %}text-amber-400{% endif %}">
+                    +{{ '%.1f'|format(tx.amount) if tx.currency == 'coins' else tx.amount|int }}
+                    {{ '🪨' if tx.currency == 'stones' else '🪙' }}
+                </span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-slate-500 py-8 text-sm">No transactions yet</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

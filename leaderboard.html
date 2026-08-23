@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard • LuxMine{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 pt-6">
+    <h1 class="text-xl font-bold mb-5">🏆 Leaderboard</h1>
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-5 overflow-x-auto no-scrollbar">
+        <button onclick="showTab('coins')" id="tab-coins" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-gold-500 text-dark-900">
+            Top Coins
+        </button>
+        <button onclick="showTab('level')" id="tab-level" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold glass text-slate-300">
+            Top Level
+        </button>
+        <button onclick="showTab('streak')" id="tab-streak" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold glass text-slate-300">
+            Top Streak
+        </button>
+    </div>
+
+    <!-- Coins Tab -->
+    <div id="panel-coins" class="space-y-2">
+        {% for u in top_coins %}
+        <div class="glass rounded-xl px-4 py-3 flex items-center gap-3 {% if u.id == user.id %}ring-1 ring-gold-500/50{% endif %}">
+            <span class="w-7 text-center font-bold text-sm
+                {% if loop.index == 1 %}text-yellow-400{% elif loop.index == 2 %}text-slate-300{% elif loop.index == 3 %}text-amber-600{% else %}text-slate-500{% endif %}">
+                {% if loop.index <= 3 %}{{ ['🥇','🥈','🥉'][loop.index0] }}{% else %}{{ loop.index }}{% endif %}
+            </span>
+            <div class="w-9 h-9 rounded-full bg-dark-600 flex items-center justify-center text-sm font-bold text-gold-400">
+                {{ u.username[0]|upper }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">{{ u.username }}{% if u.id == user.id %} <span class="text-gold-400 text-xs">(You)</span>{% endif %}</p>
+                <p class="text-xs text-slate-500">Lv.{{ u.level }}</p>
+            </div>
+            <span class="text-sm font-semibold text-amber-400">🪙 {{ '%.0f'|format(u.coins) }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Level Tab -->
+    <div id="panel-level" class="space-y-2 hidden">
+        {% for u in top_level %}
+        <div class="glass rounded-xl px-4 py-3 flex items-center gap-3 {% if u.id == user.id %}ring-1 ring-gold-500/50{% endif %}">
+            <span class="w-7 text-center font-bold text-sm
+                {% if loop.index == 1 %}text-yellow-400{% elif loop.index == 2 %}text-slate-300{% elif loop.index == 3 %}text-amber-600{% else %}text-slate-500{% endif %}">
+                {% if loop.index <= 3 %}{{ ['🥇','🥈','🥉'][loop.index0] }}{% else %}{{ loop.index }}{% endif %}
+            </span>
+            <div class="w-9 h-9 rounded-full bg-dark-600 flex items-center justify-center text-sm font-bold text-gold-400">
+                {{ u.username[0]|upper }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">{{ u.username }}{% if u.id == user.id %} <span class="text-gold-400 text-xs">(You)</span>{% endif %}</p>
+            </div>
+            <span class="text-sm font-semibold text-white">Lv.{{ u.level }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Streak Tab -->
+    <div id="panel-streak" class="space-y-2 hidden">
+        {% for u in top_streak %}
+        <div class="glass rounded-xl px-4 py-3 flex items-center gap-3 {% if u.id == user.id %}ring-1 ring-gold-500/50{% endif %}">
+            <span class="w-7 text-center font-bold text-sm
+                {% if loop.index == 1 %}text-yellow-400{% elif loop.index == 2 %}text-slate-300{% elif loop.index == 3 %}text-amber-600{% else %}text-slate-500{% endif %}">
+                {% if loop.index <= 3 %}{{ ['🥇','🥈','🥉'][loop.index0] }}{% else %}{{ loop.index }}{% endif %}
+            </span>
+            <div class="w-9 h-9 rounded-full bg-dark-600 flex items-center justify-center text-sm font-bold text-gold-400">
+                {{ u.username[0]|upper }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">{{ u.username }}{% if u.id == user.id %} <span class="text-gold-400 text-xs">(You)</span>{% endif %}</p>
+            </div>
+            <span class="text-sm font-semibold text-orange-400">🔥 {{ u.streak }}d</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(name) {
+    ['coins','level','streak'].forEach(t => {
+        document.getElementById('panel-' + t).classList.toggle('hidden', t !== name);
+        const btn = document.getElementById('tab-' + t);
+        if (t === name) {
+            btn.className = 'tab-btn px-4 py-2 rounded-full text-sm font-semibold bg-gold-500 text-dark-900';
+        } else {
+            btn.className = 'tab-btn px-4 py-2 rounded-full text-sm font-semibold glass text-slate-300';
+        }
+    });
+}
+</script>
+{% endblock %}
